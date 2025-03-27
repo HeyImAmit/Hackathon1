@@ -3,6 +3,7 @@ import Home from "./pages/Home/Home";
 import Converter from "./pages/Converter/Converter";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
+import './index.css';
 
 function App() {
   return (
