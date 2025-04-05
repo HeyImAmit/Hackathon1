@@ -89,14 +89,22 @@ def extract_measurements(text):
     ingredient_str=" ".join(ingredient)
     return quantity, unit, ingredient_str
 
-def convert_to_grams(quantity, unit, ingredient):
+def convert_to_grams(text):
+    global df
+    quantity,unit,ingredient=extract_measurements(text)
+    print(quantity,unit,ingredient)
+    #ing=ingredient
     #if ingredient in df['name']:
     if ingredient not in df['name'].values:
-        ingredient, predicted_density_ml, predicted_density_cup,cate,predicted_type,=predict_densities(ingredient)
+        ingredient, predicted_density_ml, predicted_density_cup,cate,predicted_type=predict_densities(ingredient)
+        print(ingredient, predicted_density_ml, predicted_density_cup,cate,predicted_type)
         add_prediction_to_db(ingredient, predicted_density_ml, predicted_density_cup, predicted_type,cate)
         
+        
+        df = pd.DataFrame(list(collection.find()))
+        df['name'] = df['name'].str.lower()
           
-    if df.loc[df['name'] == ingredient, 'type'].eq('solid').any():
+    if df.loc[df['name'] == ingredient, 'type'].str.lower().eq('solid').any():
             if unit in ["cup", "cups","c"]:
                 return quantity * df.loc[df['name'] == ingredient, 'grams_per_cup'].values[0]
 
@@ -118,10 +126,10 @@ def convert_to_grams(quantity, unit, ingredient):
             
             
             
-# recipe_text = "2 cups Almond Flour"
+# recipe_text = "3 cups almond flour"
 # quantity, unit, ingredient = extract_measurements(recipe_text)
 # print(quantity, unit, ingredient)
-# converted_weight = convert_to_grams(quantity, unit, ingredient)
+# converted_weight = convert_to_grams(recipe_text)
 
 # if converted_weight:
 #     print(f"{quantity} {unit} of {ingredient} is approximately {converted_weight} grams.")
