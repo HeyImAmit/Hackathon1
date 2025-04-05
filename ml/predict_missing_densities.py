@@ -33,30 +33,29 @@ def predict_densities(ingredient):
     from predict_category import get_ingredient_category
     category = get_ingredient_category(ingredient)
 
-    # Step 2: Get similar ingredients
+    # Step 1: Get similar ingredients
     df = get_similar_ingredients(category)
     if df.empty:  
         return {"error": f"No data found for ingredient category: {ingredient}"}
 
-    # Step 3: Train ML Model
-    X = df[["density_g_per_ml"]]
-    y = df["grams_per_cup"]
+    # Step 2: Train ML Model
+    X = df[["density_g_per_ml"]]  # Feature: Density (g/mL)
+    y = df["grams_per_cup"]  # Target: Grams per Cup
 
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X, y)
 
-    # Step 4: Predict density per gram/ml
+    # Step 3: Predict grams per cup using the average density
     avg_density = df["density_g_per_ml"].mean()
-    predicted_density_ml = model.predict([[avg_density]])[0]
+    predicted_grams_per_cup = model.predict([[avg_density]])[0]
 
-    # Step 5: Predict grams per cup
-    predicted_density_cup = predicted_density_ml * 240  # Assuming 1 cup = 240 mL
-    
-    #step 6: solid or liq
+    # Step 4: Return the correct density (which is the average of known densities)
+    predicted_density_ml = avg_density  
+
+    # Step 5: Identify if the ingredient is solid or liquid
     predicted_type = predict_type_by_density(predicted_density_ml)
 
-
-    return ingredient,predicted_density_ml,predicted_density_cup,category,predicted_type
+    return ingredient,predicted_density_ml,predicted_grams_per_cup,category,predicted_type
     
 
 # _,predicted_density_ml,_=predict_densities(user_text)
