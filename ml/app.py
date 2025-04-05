@@ -36,9 +36,9 @@ async def convert_ingredient(input_data: IngredientInput):
         add_prediction_to_db(ingredient_name, predicted_density_ml, predicted_density_cup, predicted_type, category)
 
     # Format response
-    # if converted_weight:
-    #     if predicted_type == "Solid":
-    #         return {"message": f"{recipe_text} weighs approximately {converted_weight:.2f} grams."}
-    #     elif predicted_type == "Liquid":
-    #         return {"message": f"{recipe_text} is approximately {converted_weight:.2f} milliliters."}
-    # return {"message": "Could not convert the ingredient."}
+    if converted_weight:
+        if predicted_type in ["Solid", "solid"]:
+            return {"message": f"{recipe_text} weighs approximately {converted_weight:.2f} grams."}
+        elif predicted_type in ["Liquid", "liquid"]:
+            return {"message": f"{recipe_text} is approximately {converted_weight:.2f} milliliters."}
+    return {"message": "Could not convert the ingredient."}
